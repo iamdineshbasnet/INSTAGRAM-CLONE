@@ -1,0 +1,40 @@
+:root {
+    --border-color: #0003;
+    --body-bg-color: #f9fbfb;
+    --buttons-color: #3897f0;
+    --accent-color: #8a3ab9;
+}
+.reels_header{
+    position: relative;
+    z-index: 111;
+    width: 100%;
+    background: transparent;
+}
+.reels_header_container{
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.reels_header_content{
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.reels_header_content .header_left{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.reels_back_icon{
+    color: #FFF;
+}
+.reels_header_content .header_left > span{
+    color: #FFF;
+    font-weight: 500;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+.reels_header_content .header_right{
+    color: #FFF;
+}

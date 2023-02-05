@@ -1,0 +1,61 @@
+:root{
+    --border-color: #0003;
+    --body-bg-color: #F9FBFB;
+    --buttons-color: #3897F0;
+    --accent-color: #8A3AB9;
+}
+.chats_input{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 390px;
+    background: var(--body-bg-color);
+}
+.chats_input_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5em ;
+    width: 100%;
+    background-color: #e1e1e1;
+    border-top: 1px solid var(--border-color);
+}
+.chats_input_field{
+    max-width: 320px;
+    width: 100%;
+}
+.chats_input_field > input{
+    width: 100%;
+    line-height: 2;
+    outline: none;
+    border-radius: 4px;
+    border: 1px solid #000;
+    box-shadow: 0 0 0 2px transparent;
+    font-size: 1.2rem;
+    padding: 0 .5em;
+    transition: all .3s;
+}
+.chats_input_field > input:focus{
+    border: 1px solid var(--buttons-color);
+    box-shadow: 0 0 0 2px var(--buttons-color);
+
+}
+.send_chats{
+    line-height: 1.5;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 4px;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    background: var(--buttons-color);
+}
+.sendIcon{
+    color: var(--body-bg-color);
+}
+.send_chats.active{
+    background: gray;
+    opacity: .8;
+    cursor: not-allowed;
+}

@@ -1,0 +1,167 @@
+:root{
+    --border-color: #0003;
+    --body-bg-color: #F9FBFB;
+}
+
+.app_navigation{
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 111;
+    background: #e1e1e1;
+    border-top: 1px solid var(--border-color);
+}
+.app_nav_items{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1em;
+}
+.nav_item{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    cursor: pointer;
+}
+.nav_item.logout_btn{
+    display: none;
+}
+.nav_item_text{
+    display: none;
+    font-weight: 500;
+}
+.post_upload_container{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    max-width: 340px;
+    width: 100%;
+    transform-origin: left;
+    transform: translate(-50%, -50%);
+    scale: 0;
+    transition: all .3s;
+    background: #FFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    padding: 1em;
+
+}
+.post_upload_container.active{
+    scale: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    z-index: 1111111;
+    pointer-events: none;
+}
+.post_cancel_btn{
+    text-align: right;
+    margin-bottom: 1em;
+    pointer-events: all;
+    cursor: pointer;
+}
+.progress_bar > input{
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.caption_text_input > input{
+    width: 100%;
+    line-height: 2;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    outline: none;
+    pointer-events: all;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+}
+.choose_file{
+    margin: 1em 0;
+    display: flex;
+    gap: 10px;
+}
+.choose_file > label{
+    pointer-events: all;
+    cursor: pointer;
+}
+.choose_file .caption_icons{
+    cursor: pointer;
+    pointer-events: all;
+    color: var(--buttons-color);
+    transition: all .3s;
+}
+.choose_file .caption_icons:hover{
+    color: var(--border-color);
+}
+.choose_file > label > button{
+    background: var(--buttons-color);
+    padding: .5em 1em;
+    color: var(--body-bg-color);
+    font-weight: 500;
+    border-radius: 5px;
+    pointer-events: all;
+    cursor: pointer;
+}
+.post_upload_btn{
+    text-align: right;
+}
+.post_upload_btn > button{
+    background: var(--buttons-color);
+    padding: .5em 1.2em;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    color: #FFF;
+    border: none;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+
+
+@media screen and (min-width: 491px) and (max-width: 585px) {
+    .app_navigation{
+        position: fixed;
+        top: 57px;
+        width: 101px;
+        border-right: 1px solid var(--border-color);
+        border-top: none;
+        background: var(--body-bg-color);
+    }
+    .app_nav_items{
+        flex-direction: column;
+    }
+    .nav_item{
+        margin-bottom: 30px;
+    }
+    .nav_item.logout_btn{
+        display: flex;
+    }
+}
+@media screen and (min-width: 586px){
+    .app_navigation{
+        position: fixed;
+        top: 57px;
+        width: 161px;
+        border-right: 1px solid var(--border-color);
+        border-top: none;
+        background: var(--body-bg-color);
+    }
+    .app_nav_items{
+        flex-direction: column;
+    }
+    .nav_item{
+        margin-bottom: 30px;
+    }
+    .nav_item_text{
+        display: block;
+    }
+    .nav_item.logout_btn{
+        display: flex;
+    }
+}

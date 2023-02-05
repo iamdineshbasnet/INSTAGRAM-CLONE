@@ -1,0 +1,41 @@
+:root {
+    --border-color: #0003;
+    --body-bg-color: #f9fbfb;
+    --buttons-color: #3897f0;
+    --accent-color: #8a3ab9;
+}
+.reels{
+    width: 100%;
+    background: #000;
+}
+.reels_container{
+    height: 100vh;
+    width: 100%;
+    overflow: auto;
+    scroll-snap-type: y mandatory;
+    background: #000;
+}
+.video_container{
+    scroll-snap-align: start;
+    height: 100%;
+}
+.video_container::-webkit-scrollbar{
+    display: none;
+}
+.video_container video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    scroll-snap-align: start;
+}
+
+@media screen and (min-width: 491px){
+    .reels{
+        display: flex;
+        justify-content: center;
+    }
+    .reels_container{
+        max-width: 500px;
+        width: 60%;
+    }
+}

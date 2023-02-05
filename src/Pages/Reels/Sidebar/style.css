@@ -1,0 +1,28 @@
+:root {
+    --border-color: #0003;
+    --body-bg-color: #f9fbfb;
+    --buttons-color: #3897f0;
+    --accent-color: #8a3ab9;
+}
+.reels_sidebar{
+    width: 100%;
+    position: relative;
+}
+.reels_sidebar_container{
+    position: absolute;
+    right: 0;
+    bottom: 40px;
+    padding: 0 1em;
+}
+.reels_sidebar_action{
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    color: var(--body-bg-color);
+}
+.reels_sidebar_action > .sidebar_icon{
+    font-size: 2.2em;
+}
+.reels_sidebar_action > span{
+    font-weight: 300;
+}

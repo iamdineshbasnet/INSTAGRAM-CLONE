@@ -1,0 +1,118 @@
+:root{
+    --border-color: #0003;
+    --body-bg-color: #F9FBFB;
+    --buttons-color: #3897F0;
+    --accent-color: #8A3AB9;
+}
+.side_profile{
+    display: none;
+    position: fixed;
+    top: 3em;
+    left: 750px;
+    width: 300px;
+}
+.side_profile_box{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    background: var(--border-color);
+    width: max-content;
+    border-radius: 10px;
+    padding: .5em 1em;
+    margin-bottom: 5em;
+}
+.side_profile_box > .side_profile_img_box{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+.side_profile_img_box > img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.side_profile_content_box > span{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+.switch_account{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+.switch_account > span{
+    font-size: 1.2rem;
+}
+.profile_suggestion_header > span{
+    color: var(--buttons-color);
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+.suggestion_content{
+    margin-top: 1em;
+}
+.suggestion_content_box{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 1em;
+    background: var(--border-color);
+    padding: .5em 1em;
+    border-radius: 10px;
+    width: max-content;
+}
+.suggestion_user_img_box {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+.suggestion_user_img_box > img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.suggestion_content_box > span{
+    font-size: 1.4rem;
+}
+.suggestion_content_box > button{
+    background: var(--buttons-color);
+    border: none;
+    outline: none;
+    padding: .5em 1em;
+    border-radius: 5px;
+    color: var(--body-bg-color);
+    text-transform: capitalize;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 3em;
+}
+@media screen and (min-width: 985px) and (max-width: 1050px) {
+    .side_profile{
+        display: block;
+    }
+    .side_profile_box{
+        flex-direction: column;
+        background: none;
+    }
+    .side_profile_content_box{
+        text-align: center;
+        margin-top: -2em;
+    }
+    .suggestion_content_box{
+        gap: 5px;
+    }
+    .suggestion_content_box > button{
+        margin-left: 1em;
+    }
+}
+@media screen and (min-width: 1050px) {
+    .side_profile{
+        display: block;
+    }
+}

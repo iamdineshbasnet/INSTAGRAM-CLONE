@@ -1,0 +1,60 @@
+:root{
+    --border-color: #0003;
+    --body-bg-color: #F9FBFB;
+    --buttons-color: #3897F0;
+    --accent-color: #8A3AB9;
+}
+.home_header{
+    position: fixed;
+    top: 0;
+    background: var(--body-bg-color);
+    border-bottom: .5px solid var(--border-color);
+    width: 100%;
+    z-index: 111;
+}
+.home_header_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5em 1em;
+
+}
+.home_header_logo_text{
+    font-family: 'Billabong',cursive;
+    font-weight: 500;
+    font-size: 2rem;
+    cursor: pointer;
+}
+.home_header_menu{
+    display: none;
+}
+.logout{
+    cursor: pointer;
+}
+
+@media screen and (min-width: 491px) and (max-width: 585px) {
+    .home_header{
+        width: 100px;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+    }
+    .home_header_container{
+        flex-direction: column;
+    }
+    .home_header_actions{
+        display: none;
+    }
+}
+@media screen and (min-width: 586px) {
+    .home_header{
+        width: 160px;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+    }
+    .home_header_container{
+        flex-direction: column;
+    }
+    .home_header_actions{
+        display: none;
+    }
+}

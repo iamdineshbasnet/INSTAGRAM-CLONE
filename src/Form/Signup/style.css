@@ -1,0 +1,87 @@
+:root {
+    --border-color: #0003;
+    --body-bg-color: #f9fbfb;
+    --buttons-color: #3897f0;
+    --accent-color: #8a3ab9;
+}
+.signup_form {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+    background: var(--body-bg-color);
+}
+.signup_form > h1 {
+    font-family: "Billabong", cursive;
+    font-size: 3rem;
+    font-weight: 500;
+    color: #000;
+}
+.signup_form_container {
+    width: 100%;
+    max-width: 500px;
+    padding: 1em 2em;
+    text-align: center;
+}
+.signup_form_group {
+    margin: 1em 0;
+}
+.signup_form_group > input {
+    width: 100%;
+    border: 0.5px solid var(--border-color);
+    border-radius: 2px;
+    line-height: 2;
+    padding: 0 0.5em;
+    outline: none;
+    box-shadow: 0 0 0 2px transparent;
+    transition: all 0.3s;
+}
+.signup_form_group > input:focus {
+    border: 0.5px solid var(--buttons-color);
+    box-shadow: 0 0 0 2px var(--buttons-color);
+}
+.form_signup_btn {
+    padding: 0.5em 0;
+    margin-bottom: 1em;
+}
+.form_signup_btn > button {
+    background: var(--buttons-color);
+    width: 100%;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 2;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+.login_reference > h4 {
+    font-weight: 300;
+    font-size: 0.9em;
+}
+.login_reference > h4 > strong {
+    cursor: pointer;
+    color: var(--buttons-color);
+}
+
+.signup_form_container > label > img {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: all .3s;
+}
+.signup_form_container > label > img:hover{
+    opacity: .7;
+}
+@media screen and (min-width: 585px) {
+    .signup_form {
+        margin-top: 10em;
+    }
+    .signup_form_container {
+        border: 0.5px solid var(--border-color);
+        border-radius: 5px;
+        background: #fff;
+    }
+}

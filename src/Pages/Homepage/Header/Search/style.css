@@ -1,0 +1,30 @@
+:root{
+    --border-color: #0003;
+    --body-bg-color: #F9FBFB;
+    --buttons-color: #3897F0;
+    --accent-color: #8A3AB9;
+}
+.search{
+    display: flex;
+    justify-content: center;
+    max-width: 500px;
+    padding: 1em;
+}
+.search_container{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 .5em;
+    background: #D9D9D9;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+.search_container > input{
+    line-height: 2;
+    margin-left: .2em;
+    width: 100%;
+    outline: none;
+    border: none;
+    background: transparent;
+}
