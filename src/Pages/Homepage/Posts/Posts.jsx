@@ -1,7 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import "./style.css";
 import { db } from "../../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+    doc,
+    updateDoc,
+    collection,
+    addDoc,
+    deleteDoc,
+} from "firebase/firestore";
 import { AuthContext } from "../../../ContextHook/AuthContext";
 import Skeleton from "./skeleton/Skeleton";
 import Avatar from "@mui/material/Avatar";
@@ -17,12 +23,13 @@ import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined
 import AnnouncementOutlinedIcon from "@mui/icons-material/AnnouncementOutlined";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 const Posts = (props) => {
-    const [commentText, setCommentText] = useState("")
+    const commentRef = useRef(null);
+    const [commentText, setCommentText] = useState("");
     const { currentUser } = useContext(AuthContext);
     // Destructure the props object to get the posts and setPosts function.
     const { posts, setPosts, loadPost } = props;
-
     // Function to handle likes on the post.
     const handleLikes = (index) => {
         // copy the existing posts array to update it.
@@ -52,18 +59,24 @@ const Posts = (props) => {
             liked: updateLike[index].post.liked,
         });
     };
-    // useEffect(()=>{
-    //     handleLikes()
-    // }, [posts])
-    const handleCommentText = ({target: {value}})=>{
-        setCommentText(value)
-    }
-
-    const handleCommentSubmmit = () => {
-        console.log(commentText)
-        setCommentText("")
+    const handleCommentText = ({ target: { value } }) => {
+        setCommentText(value);
     };
 
+    const handleCommentSubmmit = async (index) => {
+        await addDoc(collection(db, `posts/${posts[index].id}/comments`), {
+            username: currentUser.displayName,
+            avatar_url: currentUser.photoURL,
+            comment: commentText,
+        });
+        setCommentText("");
+    };
+    const handleComment = (id) => {
+        commentRef.current.focus();
+    };
+    const handleDeletePost = async (id) => {
+        await deleteDoc(doc(db, "posts", id))
+    };
     // Function to handle actions on the post, when clicked on add post
     const handleAction = (e) => {
         // Get the post action container element.
@@ -71,6 +84,8 @@ const Posts = (props) => {
         // Toggle the active class on the post action container.
         postAction.classList.toggle("active");
     };
+    console.log(commentRef,"commentRef")
+
     return (
         <>
             {posts.map((postItem, index) => {
@@ -96,30 +111,47 @@ const Posts = (props) => {
                                             <MoreVertIcon
                                                 onClick={handleAction}
                                             />
-                                            <div
-                                                className="post_action_container"
-                                                id="post_action_container">
-                                                <div className="action_list_header">
-                                                    <ShareOutlinedIcon className="list_header_action" />
-                                                    <InsertLinkOutlinedIcon className="list_header_action" />
-                                                    <BookmarkBorderOutlinedIcon className="list_header_action" />
-                                                    <QrCodeScannerOutlinedIcon className="list_header_action" />
-                                                </div>
-                                                <ul className="action_list_body">
+                                        </div>
+
+                                        <div
+                                            className="post_action_container"
+                                            id="post_action_container">
+                                            <div className="action_list_header">
+                                                <ShareOutlinedIcon className="list_header_action" />
+                                                <InsertLinkOutlinedIcon className="list_header_action" />
+                                                <BookmarkBorderOutlinedIcon className="list_header_action" />
+                                                <QrCodeScannerOutlinedIcon className="list_header_action" />
+                                            </div>
+                                            <ul className="action_list_body">
+                                                {currentUser.displayName ===
+                                                postItem.post.username ? (
+                                                    <li
+                                                        className="action_list_item"
+                                                        onClick={() =>
+                                                            handleDeletePost(
+                                                                postItem.id
+                                                            )
+                                                        }>
+                                                        <DeleteOutlinedIcon />
+                                                        <span className="action_name">
+                                                            Delete
+                                                        </span>
+                                                    </li>
+                                                ) : (
                                                     <li className="action_list_item">
                                                         <VisibilityOffIcon />
                                                         <span className="action_name">
                                                             Hide
                                                         </span>
                                                     </li>
-                                                    <li className="action_list_item dangerous">
-                                                        <AnnouncementOutlinedIcon />
-                                                        <span className="action_name">
-                                                            Report
-                                                        </span>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                                )}
+                                                <li className="action_list_item dangerous">
+                                                    <AnnouncementOutlinedIcon />
+                                                    <span className="action_name">
+                                                        Report
+                                                    </span>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
                                     <div className="post_images">
@@ -145,7 +177,10 @@ const Posts = (props) => {
                                                     }
                                                 />
                                             )}
-                                            <MapsUgcOutlinedIcon className="post_action_icon" />
+                                            <MapsUgcOutlinedIcon
+                                                className="post_action_icon"
+                                                onClick={()=>handleComment(postItem.id)}
+                                            />
                                             <SendOutlinedIcon className="post_action_icon" />
                                         </div>
                                         <div className="post_actions_right">
@@ -165,16 +200,23 @@ const Posts = (props) => {
                                             {postItem.post.caption}
                                         </span>
                                     </div>
-                                    <div className="display_post_comments">
-                                        <div className="comment_author_img_box">
-                                            <img
-                                                src={currentUser.photoURL}
-                                                alt=""
-                                            />
-                                        </div>
-                                        <span>{currentUser.displayName}</span>
-                                        <p>hello</p>
-                                    </div>
+                                    {postItem.comments.map((comment, index) => {
+                                        return (
+                                            <div
+                                                className="display_post_comments"
+                                                key={index}>
+                                                <div className="comment_author_img_box">
+                                                    <img
+                                                        src={comment.avatar_url}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <span>{comment.username}</span>
+                                                <p>{comment.comment}</p>
+                                            </div>
+                                        );
+                                    })}
+
                                     <div className="post_comments">
                                         <div className="post_comments_wrapper">
                                             <EmojiEmotionsOutlinedIcon
@@ -184,13 +226,16 @@ const Posts = (props) => {
                                                 }}
                                             />
                                             <input
+                                                ref={commentRef}
                                                 onChange={handleCommentText}
                                                 value={commentText}
                                                 type="text"
                                                 placeholder="comment..."
                                             />
                                             <SendOutlinedIcon
-                                                onClick={handleCommentSubmmit}
+                                                onClick={() =>
+                                                    handleCommentSubmmit(index)
+                                                }
                                                 sx={{
                                                     color: "gray",
                                                     cursor: "pointer",

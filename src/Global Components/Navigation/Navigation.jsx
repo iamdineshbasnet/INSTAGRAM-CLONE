@@ -121,7 +121,7 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                     addDoc(collectionRef, {
                         caption: caption,
                         timestamp: serverTimestamp(),
-                        liked: false,
+                        liked_status: {},
                         likes_count: 0,
                         comments_count: 0,
                         image_url: url,
@@ -150,7 +150,7 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                 liked: likeStatus.post.liked,
             });
         });
-        signOut(auth);
+        signOut(auth);  
     };
     return (
         <>

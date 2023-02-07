@@ -12,6 +12,7 @@
     width: 100%;
 }
 .post_container {
+    width: 390px;
     padding: 0.5em 0;
     border: 1px solid var(--border-color);
 }
