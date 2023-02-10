@@ -3,7 +3,7 @@ import React, { useContext, useRef, useState } from "react";
 import { db, storage, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, addDoc, serverTimestamp, collection } from "firebase/firestore";
 import { AuthContext } from "../../ContextHook/AuthContext";
 import { useNavigate } from "react-router-dom";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -25,7 +25,8 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
     // "useRef" hook to access DOM Element
     const appNavigation = useRef();
     // Importing currentUser from "AuthContext"
-    const { currentUser } = useContext(AuthContext);
+    const { currentUser, listAllUser } = useContext(AuthContext);
+    // console.log(listAllUser[0].listUsers.posts_count)
 
     // "useNavigate" hooks to redirect to different pages
     const navigate = useNavigate();
@@ -121,14 +122,15 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                     addDoc(collectionRef, {
                         caption: caption,
                         timestamp: serverTimestamp(),
-                        liked_status: {},
                         likes_count: 0,
                         comments_count: 0,
                         image_url: url,
                         avatar_url: `${currentUser.photoURL}`,
                         username: `${currentUser.displayName}`,
                     });
-
+                    addDoc(collection(db, `users/${currentUser.uid}/posts`),{
+                        image_url: url
+                    })
                     // Remove the active class form upload container
                     uploadContainer.classList.remove("active");
 
@@ -140,17 +142,20 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                 });
             }
         );
+
+        listAllUser.map( async(user)=>{
+            if(user.listUsers.displayName === currentUser.displayName){
+                const updatePostsCount = doc(db, 'users', `${currentUser.uid}`)
+                
+                updateDoc(updatePostsCount, {
+                    posts_count: user.listUsers.posts_count + 1
+                })
+            }
+        })
     };
 
     const handleSignout = () => {
-        posts.map((likeStatus) => {
-            likeStatus.post.liked = false;
-            const updateLikeCount = doc(db, "posts", `${likeStatus.id}`);
-            updateDoc(updateLikeCount, {
-                liked: likeStatus.post.liked,
-            });
-        });
-        signOut(auth);  
+        signOut(auth);
     };
     return (
         <>
@@ -176,73 +181,71 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                         )}
                         <span className="nav_item_text">Reels</span>
                     </li>
-                    <li className={`nav_item`}>
+                    <li className={`nav_item`} onClick={handlePostUpload}>
                         {addPostActive ? (
-                            <AddCircle onClick={handlePostUpload} />
+                            <AddCircle />
                         ) : (
-                            <AddCircleOutlineOutlinedIcon
-                                onClick={handlePostUpload}
-                            />
+                            <AddCircleOutlineOutlinedIcon />
                         )}
-                        <span className="nav_item_text">Add post</span>
-                        <form
-                            onSubmit={uploadPost}
-                            id="post_upload_container"
-                            className="post_upload_container">
-                            <div className="post_cancel_btn">
-                                <CloseIcon onClick={handlePostCancel} />
-                            </div>
-                            <div className="caption_text_input">
-                                <input
-                                    onChange={(event) =>
-                                        setCaption(event.target.value)
-                                    }
-                                    value={caption}
-                                    type="text"
-                                    placeholder="What's on your mind?"
-                                    required
-                                />
-                            </div>
-                            <div className="choose_file">
-                                <AddReactionOutlinedIcon
-                                    titleAccess="emoji"
-                                    className="caption_icons"
-                                />
-                                <CalendarMonthOutlinedIcon
-                                    titleAccess="schedule"
-                                    className="caption_icons"
-                                />
-                                <input
-                                    onChange={handleFile}
-                                    required
-                                    type="file"
-                                    id="file"
-                                    style={{
-                                        display: "none",
-                                        cursor: "pointer",
-                                        pointerEvents: "all",
-                                    }}
-                                />
-                                <label htmlFor="file">
-                                    <ImageOutlinedIcon
-                                        titleAccess="choose image"
-                                        className="caption_icons"
-                                    />
-                                </label>
-                            </div>
-                            <div className="progress_bar">
-                                <input
-                                    type="range"
-                                    name="progress"
-                                    value={progress}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="post_upload_btn">
-                                <button type="submit">post</button>
-                            </div>
-                        </form>
+                        <span className="nav_item_text">Create</span>
                     </li>
+                    <form
+                        onSubmit={uploadPost}
+                        id="post_upload_container"
+                        className="post_upload_container">
+                        <div className="post_cancel_btn">
+                            <CloseIcon onClick={handlePostCancel} />
+                        </div>
+                        <div className="caption_text_input">
+                            <input
+                                onChange={(event) =>
+                                    setCaption(event.target.value)
+                                }
+                                value={caption}
+                                type="text"
+                                placeholder="What's on your mind?"
+                                required
+                            />
+                        </div>
+                        <div className="choose_file">
+                            <AddReactionOutlinedIcon
+                                titleAccess="emoji"
+                                className="caption_icons"
+                            />
+                            <CalendarMonthOutlinedIcon
+                                titleAccess="schedule"
+                                className="caption_icons"
+                            />
+                            <input
+                                onChange={handleFile}
+                                required
+                                type="file"
+                                id="file"
+                                style={{
+                                    display: "none",
+                                    cursor: "pointer",
+                                    pointerEvents: "all",
+                                }}
+                            />
+                            <label htmlFor="file">
+                                <ImageOutlinedIcon
+                                    titleAccess="choose image"
+                                    className="caption_icons"
+                                />
+                            </label>
+                        </div>
+                        <div className="progress_bar">
+                            <input
+                                type="range"
+                                name="progress"
+                                value={progress}
+                                readOnly
+                            />
+                        </div>
+                        <div className="post_upload_btn">
+                            <button type="submit">post</button>
+                        </div>
+                    </form>
                     <li
                         className={`nav_item`}
                         onClick={() => handleNavigation("/message")}>

@@ -21,10 +21,10 @@ function App() {
                     <Route exact path="/login" element={<Login />} />
                     <Route exact path="/signup" element={<Signup />} />
                     <Route exact path="/" element={currentUser?<Homepage isNavActive={isNavActive} setIsNavActive={setIsNavActive}/>:<Login/>} />
-                    <Route exact path="/reels" element={<Reels />} />
-                    <Route exact path="/message" element={<Message />} />
-                    <Route exact path="/chats" element={<Chats />} />
-                    <Route exact path="/profile" element={<Profile />} />
+                    <Route exact path="/reels" element={currentUser?<Reels />: <Login/>} />
+                    <Route exact path="/message" element={currentUser?<Message />: <Login/>} />
+                    <Route exact path="/chats" element={currentUser?<Chats />: <Login/>} />
+                    <Route exact path="/profile" element={currentUser?<Profile />: <Login/>} />
                 </Routes>
             </BrowserRouter>
         </>

@@ -8,22 +8,22 @@
     display: none;
     position: fixed;
     top: 3em;
-    left: 750px;
+    left: 820px;
     width: 300px;
 }
 .side_profile_box{
     display: flex;
     align-items: center;
-    gap: 40px;
-    background: var(--border-color);
+    gap: 20px;
+    background: #FFF;
     width: max-content;
-    border-radius: 10px;
+    border-radius: 5px;
     padding: .5em 1em;
     margin-bottom: 5em;
 }
 .side_profile_box > .side_profile_img_box{
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     border: 1px solid var(--border-color);
     overflow: hidden;
@@ -35,21 +35,22 @@
 }
 
 .side_profile_content_box > span{
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
 }
 .switch_account{
     display: flex;
     gap: 5px;
     align-items: center;
+    cursor: pointer;
 }
 .switch_account > span{
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 .profile_suggestion_header > span{
     color: var(--buttons-color);
     font-weight: 500;
-    font-size: 1.5rem;
+    font-size: 1rem;
 }
 .suggestion_content{
     margin-top: 1em;
@@ -57,16 +58,16 @@
 .suggestion_content_box{
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 1em;
-    background: var(--border-color);
+    background: #FFF;
     padding: .5em 1em;
-    border-radius: 10px;
+    border-radius: 5px;
     width: max-content;
 }
 .suggestion_user_img_box {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: 1px solid var(--border-color);
     overflow: hidden;
@@ -77,27 +78,36 @@
     object-fit: cover;
 }
 .suggestion_content_box > span{
-    font-size: 1.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+    width: 130px;
 }
-.suggestion_content_box > button{
+.suggestion_content_box > .follow_btn{
     background: var(--buttons-color);
-    border: none;
+    border: 1px solid transparent;
     outline: none;
-    padding: .5em 1em;
-    border-radius: 5px;
+    padding: .2em .7em;
+    border-radius: 2px;
+    width: 80px;
     color: var(--body-bg-color);
     text-transform: capitalize;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: .9rem;
     cursor: pointer;
-    margin-left: 3em;
+    margin-left: 1em;
 }
-@media screen and (min-width: 985px) and (max-width: 1050px) {
+.suggestion_content_box > .follow_btn.active{
+    background: var(--body-bg-color);
+    color: #000;
+    border: 1px solid var(--border-color);
+}
+@media screen and (min-width: 985px) and (max-width: 1140px) {
     .side_profile{
         display: block;
     }
     .side_profile_box{
         flex-direction: column;
+        gap: 40px;
         background: none;
     }
     .side_profile_content_box{
@@ -107,12 +117,13 @@
     .suggestion_content_box{
         gap: 5px;
     }
-    .suggestion_content_box > button{
+    .suggestion_content_box > .follow_btn{
         margin-left: 1em;
     }
 }
-@media screen and (min-width: 1050px) {
+@media screen and (min-width: 1140px) {
     .side_profile{
         display: block;
+        left: 900px;
     }
 }

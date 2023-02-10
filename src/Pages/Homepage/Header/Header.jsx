@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
-const Header = ({isNavActive, setIsNavActive}) => {
+const Header = () => {
     const navigate = useNavigate();
 
     // Function to handle navigation to a specific path
@@ -13,13 +13,7 @@ const Header = ({isNavActive, setIsNavActive}) => {
         navigate(`${path}`);
     };
 
-    const handleNavActive = () =>{
-        if(isNavActive){
-            setIsNavActive(false)
-        }else{
-            setIsNavActive(true)
-        }
-    }
+
     return (
         <>
             <header className="home_header">

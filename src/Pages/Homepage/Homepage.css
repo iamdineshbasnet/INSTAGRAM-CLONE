@@ -1,0 +1,8 @@
+.homepage{
+    background: transparent;
+}
+.homepage.active{
+    scroll-behavior: none;
+    pointer-events: none;
+    z-index: 111;
+}

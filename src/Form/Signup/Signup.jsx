@@ -78,6 +78,10 @@ const Signup = () => {
                             displayName,
                             email,
                             photoURL: downloadURL,
+                            followers: 0,
+                            following: 0,
+                            posts_count: 0,
+                            saved_count: 0,
                         });
 
                         //create empty user chats on firestore

@@ -7,6 +7,10 @@ import {
     collection,
     addDoc,
     deleteDoc,
+    query,
+    where,
+    getDocs,
+    serverTimestamp,
 } from "firebase/firestore";
 import { AuthContext } from "../../../ContextHook/AuthContext";
 import Skeleton from "./skeleton/Skeleton";
@@ -25,66 +29,107 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 const Posts = (props) => {
+    const [liked, setLiked] = useState(false);
+    const [focusedField, setFocusField] = useState(-1)
+    const [commentText, setCommentText] = useState({});
     const commentRef = useRef(null);
-    const [commentText, setCommentText] = useState("");
     const { currentUser } = useContext(AuthContext);
     // Destructure the props object to get the posts and setPosts function.
-    const { posts, setPosts, loadPost } = props;
+    const { posts, setPosts, loadPost, setPageActive } = props;
     // Function to handle likes on the post.
-    const handleLikes = (index) => {
-        // copy the existing posts array to update it.
-        const updateLike = [...posts];
+    // const handleLikes = async (index) => {
+    //     // copy the existing posts array to update it.
+    //     const updateLike = [...posts];
 
-        // check if the post is already liked.
-        if (updateLike[index].post.liked) {
-            // If the post is already liked, decrement the like count.
-            updateLike[index].post.likes_count =
-                updateLike[index].post.likes_count - 1;
-        } else {
-            // If the post is not liked, increment the like count.
-            updateLike[index].post.likes_count =
-                updateLike[index].post.likes_count + 1;
-        }
+    //     // check if the post is already liked.
+    //     if (liked) {
+    //         // If the post is already liked, decrement the like count.
+    //         updateLike[index].post.likes_count =
+    //             updateLike[index].post.likes_count - 1;
+    //         setLiked(false);
+    //     } else {
+    //         // If the post is not liked, increment the like count.
+    //         updateLike[index].post.likes_count =
+    //             updateLike[index].post.likes_count + 1;
+    //         setLiked(true);
+    //     }
 
-        // Toggle the liked status of the post.
-        updateLike[index].post.liked = !updateLike[index].post.liked;
+    //     // Toggle the liked status of the post.
+    //     // updateLike[index].post.liked = !updateLike[index].post.liked;
 
-        // Update the state with the updated posts array
-        setPosts(updateLike);
+    //     // Update the state with the updated posts array
+    //     setPosts(updateLike);
 
-        // Update the like count and liked status of the post in the database
-        const updateLikeCount = doc(db, "posts", `${updateLike[index].id}`);
-        updateDoc(updateLikeCount, {
-            likes_count: updateLike[index].post.likes_count,
-            liked: updateLike[index].post.liked,
-        });
-    };
-    const handleCommentText = ({ target: { value } }) => {
-        setCommentText(value);
+    //     const q = query(
+    //         collection(db, `posts/${posts[index].id}/likes`),
+    //         where("liked_by", "==", currentUser.displayName)
+    //     );
+    //     const querySnapshot = await getDocs(q);
+    //     if (querySnapshot.empty) {
+    //         await collection(db, `posts/${posts[index].id}/likes`).add({
+    //             liked_by: currentUser.displayName,
+    //             liked_status: true,
+    //         });
+    //     } else {
+    //         querySnapshot.forEach(async (doc) => {
+    //             await doc.ref.update({
+    //                 liked_status: !liked,
+    //             });
+    //         });
+    //     }
+
+    //     // Update the like count and liked status of the post in the database
+    //     const updateLikeCount = doc(db, "posts", `${updateLike[index].id}`);
+    //     updateDoc(updateLikeCount, {
+    //         likes_count: updateLike[index].post.likes_count,
+    //     });
+    // };
+    const handleCommentText = (value, index) => {
+        setCommentText({...commentText, [index]: value});
     };
 
     const handleCommentSubmmit = async (index) => {
-        await addDoc(collection(db, `posts/${posts[index].id}/comments`), {
-            username: currentUser.displayName,
-            avatar_url: currentUser.photoURL,
-            comment: commentText,
+        const updateComments = [...posts];
+        await addDoc(
+            collection(db, `posts/${updateComments[index].id}/comments`),
+            {
+                username: currentUser.displayName,
+                avatar_url: currentUser.photoURL,
+                comment: commentText,
+                commentAt: serverTimestamp(),
+            }
+        );
+        setPosts(updateComments);
+        const updateCommentsCount = doc(
+            db,
+            "posts",
+            `${updateComments[index].id}`
+        );
+        updateDoc(updateCommentsCount, {
+            comments_count: updateComments[index].post.comments_count + 1,
         });
         setCommentText("");
     };
-    const handleComment = (id) => {
-        commentRef.current.focus();
+    const handleComment = (index) => {
+        setFocusField(index)
+        console.log(focusedField)
     };
     const handleDeletePost = async (id) => {
-        await deleteDoc(doc(db, "posts", id))
+        await deleteDoc(doc(db, "posts", id));
     };
     // Function to handle actions on the post, when clicked on add post
     const handleAction = (e) => {
         // Get the post action container element.
         const postAction = document.querySelector("#post_action_container");
         // Toggle the active class on the post action container.
-        postAction.classList.toggle("active");
+        if (postAction.classList.contains("active")) {
+            postAction.classList.remove("active");
+            setPageActive(false);
+        } else {
+            postAction.classList.add("active");
+            setPageActive(true);
+        }
     };
-    console.log(commentRef,"commentRef")
 
     return (
         <>
@@ -109,6 +154,7 @@ const Posts = (props) => {
                                         </div>
                                         <div className="post_top_action">
                                             <MoreVertIcon
+                                                sx={{ pointerEvents: "all" }}
                                                 onClick={handleAction}
                                             />
                                         </div>
@@ -125,13 +171,7 @@ const Posts = (props) => {
                                             <ul className="action_list_body">
                                                 {currentUser.displayName ===
                                                 postItem.post.username ? (
-                                                    <li
-                                                        className="action_list_item"
-                                                        onClick={() =>
-                                                            handleDeletePost(
-                                                                postItem.id
-                                                            )
-                                                        }>
+                                                    <li className="action_list_item">
                                                         <DeleteOutlinedIcon />
                                                         <span className="action_name">
                                                             Delete
@@ -164,22 +204,24 @@ const Posts = (props) => {
                                         <div className="post_actions_left">
                                             {postItem.post.liked ? (
                                                 <FavoriteIcon
-                                                    onClick={() =>
-                                                        handleLikes(index)
-                                                    }
+                                                    // onClick={() =>
+                                                    //     handleLikes(index)
+                                                    // }
                                                     className="post_action_icon post_like"
                                                 />
                                             ) : (
                                                 <FavoriteBorderOutlinedIcon
                                                     className=" post_action_icon post_unlike"
-                                                    onClick={() =>
-                                                        handleLikes(index)
-                                                    }
+                                                    // onClick={() =>
+                                                    //     handleLikes(index)
+                                                    // }
                                                 />
                                             )}
                                             <MapsUgcOutlinedIcon
                                                 className="post_action_icon"
-                                                onClick={()=>handleComment(postItem.id)}
+                                                onClick={() =>
+                                                    handleComment(index)
+                                                }
                                             />
                                             <SendOutlinedIcon className="post_action_icon" />
                                         </div>
@@ -226,9 +268,9 @@ const Posts = (props) => {
                                                 }}
                                             />
                                             <input
-                                                ref={commentRef}
-                                                onChange={handleCommentText}
-                                                value={commentText}
+                                                ref={(input)=> input && focusedField === index && input.focus()}
+                                                onChange={(e)=>handleCommentText(e.target.value, index)}
+                                                value={commentText[index] || ""}
                                                 type="text"
                                                 placeholder="comment..."
                                             />
