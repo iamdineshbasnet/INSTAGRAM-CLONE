@@ -42,8 +42,8 @@ const Homepage = () => {
               });
               return [...updatedPosts, { post: postItem.data(), id: postItem.id, comments, likes }];
             });
+            setLoadPost(false)
           });
-          setLoadPost(false)
         };
         return () => {
           unsubscribe();

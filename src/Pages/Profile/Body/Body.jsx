@@ -7,6 +7,7 @@ import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined
 const Body = () => {
     // Accessing the currentUser value from the AuthContext
     const { currentUser, userInfo } = useContext(AuthContext);
+
     const postListNav = Array.from(
         document.querySelectorAll(".post_list_item")
     );
@@ -27,8 +28,8 @@ const Body = () => {
     });
     return (
         <>
-            {userInfo.map((user, index) => {
-                return user.listUserInfo.displayName ===
+            {userInfo?.map((user, index) => {
+                return user.listUsers.displayName ===
                     currentUser.displayName ? (
                     <div className="profile_body" key={index}>
                         <div className="profile_container">
@@ -41,15 +42,15 @@ const Body = () => {
                             <div className="profile_follow">
                                 <div className="profile_info">
                                     <h1>Posts</h1>
-                                    <span>{user.listUserInfo.posts_count}</span>
+                                    <span>{user.listUsers.posts_count}</span>
                                 </div>
                                 <div className="profile_info">
                                     <h1>Following</h1>
-                                    <span>{user.listUserInfo.following}</span>
+                                    <span>{user.listUsers.following}</span>
                                 </div>
                                 <div className="profile_info">
                                     <h1>Followers</h1>
-                                    <span>{user.listUserInfo.followers}</span>
+                                    <span>{user.listUsers.followers}</span>
                                 </div>
                             </div>
                         </div>
@@ -72,33 +73,42 @@ const Body = () => {
                         </div>
                         <div className="post_list_body_container">
                             <div className="post_list_body_item active">
-                                {user.listUserInfo.posts_count === 0
-                                    ? <div className="no_post">No post to show</div>
-                                    : user.posts.map((post, i) => {
-                                          return (
-                                              <div
-                                                  className="post_list_box"
-                                                  key={i}>
-                                                  <img
-                                                      src={post.image_url}
-                                                      alt=""
-                                                  />
-                                              </div>
-                                          );
-                                      })}
+                                {user.listUsers.posts_count === 0 ? (
+                                    <div className="no_post">
+                                        No post to show
+                                    </div>
+                                ) : (
+                                    user?.posts.map((post, i) => {
+                                        return (
+                                            <div
+                                                className="post_list_box"
+                                                key={i}>
+                                                <img
+                                                    src={post.image_url}
+                                                    alt=""
+                                                />
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
                             <div className="post_list_body_item">
-                                {user.listUserInfo.saved_count === 0
-                                ? <div className="no_post">No Saved Post</div>
-                                :
-                                user.saved.map((save, j) => {
-                                    return (
-                                        <div className="post_list_box" key={j}>
-                                            <img src={save.image_url} alt="" />
-                                        </div>
-                                    );
-                                })
-                                }
+                                {user.listUsers.saved_count === 0 ? (
+                                    <div className="no_post">No Saved Post</div>
+                                ) : (
+                                    user.saved.map((save, j) => {
+                                        return (
+                                            <div
+                                                className="post_list_box"
+                                                key={j}>
+                                                <img
+                                                    src={save.image_url}
+                                                    alt=""
+                                                />
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
                             <div className="post_list_body_item">
                                 <p>tagged</p>

@@ -1,9 +1,15 @@
 import "./style.css";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { db, storage, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, updateDoc, addDoc, serverTimestamp, collection } from "firebase/firestore";
+import {
+    doc,
+    updateDoc,
+    addDoc,
+    serverTimestamp,
+    collection,
+} from "firebase/firestore";
 import { AuthContext } from "../../ContextHook/AuthContext";
 import { useNavigate } from "react-router-dom";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -25,7 +31,8 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
     // "useRef" hook to access DOM Element
     const appNavigation = useRef();
     // Importing currentUser from "AuthContext"
-    const { currentUser, listAllUser } = useContext(AuthContext);
+    const { currentUser, listAllUser, currentUserList } =
+        useContext(AuthContext);
     // console.log(listAllUser[0].listUsers.posts_count)
 
     // "useNavigate" hooks to redirect to different pages
@@ -60,7 +67,6 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
         setProgress(0);
         setCaption("");
     };
-
     // Function for handling the post upload event
     const handlePostUpload = () => {
         if (uploadContainer.classList.contains("active")) {
@@ -86,9 +92,7 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
     };
 
     // Function for uploading the post
-    const uploadPost = (e) => {
-        // Preventing the default form submit behavior
-        e.preventDefault();
+    const uploadPost = () => {
 
         // checking if an image has been selected
         if (!image) {
@@ -128,9 +132,9 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                         avatar_url: `${currentUser.photoURL}`,
                         username: `${currentUser.displayName}`,
                     });
-                    addDoc(collection(db, `users/${currentUser.uid}/posts`),{
-                        image_url: url
-                    })
+                    addDoc(collection(db, `users/${currentUser.uid}/posts`), {
+                        image_url: url,
+                    });
                     // Remove the active class form upload container
                     uploadContainer.classList.remove("active");
 
@@ -143,15 +147,11 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
             }
         );
 
-        listAllUser.map( async(user)=>{
-            if(user.listUsers.displayName === currentUser.displayName){
-                const updatePostsCount = doc(db, 'users', `${currentUser.uid}`)
-                
-                updateDoc(updatePostsCount, {
-                    posts_count: user.listUsers.posts_count + 1
-                })
-            }
-        })
+        const updatePostsCount = doc(db, "users", `${currentUserList.id}`);
+
+        updateDoc(updatePostsCount, {
+            posts_count: currentUserList.user.posts_count + 1,
+        });
     };
 
     const handleSignout = () => {
@@ -189,8 +189,7 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                         )}
                         <span className="nav_item_text">Create</span>
                     </li>
-                    <form
-                        onSubmit={uploadPost}
+                    <div
                         id="post_upload_container"
                         className="post_upload_container">
                         <div className="post_cancel_btn">
@@ -243,9 +242,9 @@ const Navigation = ({ collectionRef, posts, setPosts }) => {
                             />
                         </div>
                         <div className="post_upload_btn">
-                            <button type="submit">post</button>
+                            <button onClick={uploadPost} >post</button>
                         </div>
-                    </form>
+                    </div>
                     <li
                         className={`nav_item`}
                         onClick={() => handleNavigation("/message")}>

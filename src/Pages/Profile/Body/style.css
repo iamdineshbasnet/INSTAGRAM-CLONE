@@ -120,6 +120,7 @@
 }
 .post_list_box:hover > img{
     scale: 1.2;
+    rotate: -10deg;
 }
 @media screen and (min-width: 491px) and (max-width: 585px) {
     .profile_body{
@@ -140,6 +141,7 @@
         height: 120px;
     }
     .profile_follow {
+        line-height: 0;
         gap: 2em;
     }
     .profile_info{
@@ -155,6 +157,7 @@
 
     .profile_info > span{
         font-size: 1.25rem;
+        margin-bottom: 2px;
         font-weight: 500;
     }
     .post_list_box{

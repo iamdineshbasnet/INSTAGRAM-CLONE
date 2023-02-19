@@ -12,10 +12,10 @@ const Signup = () => {
 
     // State to hold any error
     const [err, setErr] = useState(false);
+    const [errValue, setErrValue] = useState("");
 
     // State to hold the file with a default value of null
     const [file, setFile] = useState(null);
-
     // State to hold the displayName, email and password of the user
     const [signUpUser, setSignUpUser] = useState({
         displayName: "",
@@ -50,53 +50,72 @@ const Signup = () => {
     const handleSignup = async (e) => {
         // Prevent form from submitting
         e.preventDefault();
-        try {
-            // create a user with email and password
-            const res = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-
-            // create a unique image name
-            const date = new Date().getTime();
-            const storageRef = ref(storage, `${displayName + date}`);
-
-            // Upload the selected file to the storage with a resumable upload
-            await uploadBytesResumable(storageRef, file).then(() => {
-                // Get the download url of the uploaded file
-                getDownloadURL(storageRef).then(async (downloadURL) => {
-                    try {
-                        //Update the user profile with displayName and the downloadURL of the image
-                        await updateProfile(res.user, {
-                            displayName,
-                            photoURL: downloadURL,
-                        });
-                        //create a document for user on firestore with user's details
-                        await setDoc(doc(db, "users", res.user.uid), {
-                            uid: res.user.uid,
-                            displayName,
-                            email,
-                            photoURL: downloadURL,
-                            followers: 0,
-                            following: 0,
-                            posts_count: 0,
-                            saved_count: 0,
-                        });
-
-                        //create empty user chats on firestore
-                        await setDoc(doc(db, "userChats", res.user.uid), {});
-
-                        // Navigate to "login" page, when user signup successfully
-                        navigate("/login");
-                    } catch (err) {
-                        setErr(true);
-                    }
-                });
-            });
-        } catch (err) {
-            // Setting the error state to true if an error occurs during the "signup" process
+        if (!file) {
             setErr(true);
+            setErrValue("Choose an Avatar");
+        } else if (!displayName) {
+            setErr(true);
+            setErrValue("choose a username");
+        } else if (!email) {
+            setErr(true);
+            setErrValue("Invalid Email!");
+        } else if (!password || password.length < 6) {
+            setErr(true);
+            setErrValue("Password must be at least 6 character");
+        } else {
+            try {
+                // create a user with email and password
+                const res = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+                // create a unique image name
+                const date = new Date().getTime();
+                const storageRef = ref(storage, `${displayName + date}`);
+
+                // Upload the selected file to the storage with a resumable upload
+                await uploadBytesResumable(storageRef, file).then(() => {
+                    // Get the download url of the uploaded file
+                    getDownloadURL(storageRef).then(async (downloadURL) => {
+                        try {
+                            //Update the user profile with displayName and the downloadURL of the image
+                            await updateProfile(res.user, {
+                                displayName,
+                                photoURL: downloadURL,
+                            });
+                            //create a document for user on firestore with user's details
+                            await setDoc(doc(db, "users", res.user.uid), {
+                                uid: res.user.uid,
+                                displayName,
+                                email,
+                                photoURL: downloadURL,
+                                followers: 0,
+                                following: 0,
+                                posts_count: 0,
+                                saved_count: 0,
+                            });
+
+                            //create empty user chats on firestore
+                            await setDoc(
+                                doc(db, "userChats", res.user.uid),
+                                {}
+                            );
+
+                            // Navigate to "login" page, when user signup successfully
+                            navigate("/login");
+                        } catch (err) {
+                            console.log('');
+                        }
+                    });
+                });
+                setErr(false);
+            } catch (err) {
+                // Setting the error state to true if an error occurs during the "signup" process
+                setErr(true);
+                setErrValue("Email Already in use");
+            }
         }
     };
 
@@ -109,19 +128,17 @@ const Signup = () => {
             <div className="signup_form_container">
                 <h1>Instagram</h1>
                 <input
-                    required
                     onChange={handleFileChange}
                     style={{ display: "none" }}
                     type="file"
                     id="userAvatarImg"
                 />
-                    <label htmlFor="userAvatarImg">
-                        <img src={avatar} alt="" />
-                    </label>
+                <label htmlFor="userAvatarImg">
+                    <img src={avatar} alt="" />
+                </label>
                 <div className="signup_form_input_container">
                     <div className="signup_form_group">
                         <input
-                            required
                             onChange={handleDisplayName}
                             value={displayName}
                             type="text"
@@ -130,7 +147,6 @@ const Signup = () => {
                     </div>
                     <div className="signup_form_group">
                         <input
-                            required
                             onChange={handleEmail}
                             value={email}
                             type="text"
@@ -139,7 +155,6 @@ const Signup = () => {
                     </div>
                     <div className="signup_form_group">
                         <input
-                            required
                             onChange={handlePassword}
                             value={password}
                             type="password"
@@ -149,11 +164,17 @@ const Signup = () => {
                     <div className="form_signup_btn">
                         <button type="submit">Signup</button>
                     </div>
-                    {err && <span>Something went wrong</span>}
+                    {!err ? (
+                        ""
+                    ) : (
+                        <div className="display_signup_error">
+                            <span>{errValue}</span>
+                        </div>
+                    )}
                     <div className="login_reference">
                         <h4>
                             Already have an account?
-                            <strong onClick={handleNavigation}>Login</strong>
+                            <strong onClick={handleNavigation}> Login</strong>
                         </h4>
                     </div>
                 </div>

@@ -3,21 +3,78 @@ import "./style.css";
 import { AuthContext } from "../../../ContextHook/AuthContext";
 import AutorenewOutlinedIcon from "@mui/icons-material/AutorenewOutlined";
 import { signOut } from "firebase/auth";
-import { auth } from "../../../firebase";
+import { auth, db } from "../../../firebase";
+import {
+    collection,
+    doc,
+    getDocs,
+    query,
+    addDoc,
+    updateDoc,
+    where,
+    deleteDoc,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 const Sideprofile = () => {
-    const [follow, setFollow] = useState(false);
-    const { currentUser } = useContext(AuthContext);
-    const { listAllUser } = useContext(AuthContext);
+    const navigate = useNavigate()
+    const [follow, setFollow] = useState({});
+    const { currentUser, userInfo, setUserInfo, currentUserList } =
+        useContext(AuthContext);
 
-    const followBtnRef = useRef();
-    const handleFollowBtn = () => {
-        if (followBtnRef.current.classList.contains("active")) {
-            followBtnRef.current.classList.remove("active");
-            setFollow(false);
+    const handleFollowBtn = async (index) => {
+        const updateFollow = [...userInfo];
+        const followersCount = doc(db, `users`, `${updateFollow[index].id}`);
+        const followingCount = doc(db, `users`, `${currentUserList.id}`);
+        const userRef = collection(
+            db,
+            `users/${updateFollow[index].id}/followers`
+        );
+        const q = query(
+            userRef,
+            where("username", "==", `${currentUser.displayName}`)
+        );
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            addDoc(
+                collection(db, `users/${updateFollow[index].id}/followers`),
+                {
+                    username: currentUser.displayName,
+                    followers_status: true,
+                }
+            ).then(() => {
+                setFollow({ ...follow, [index]: true });
+            });
+            addDoc(collection(db, `users/${currentUserList.id}/following`),{
+                username: updateFollow[index].listUsers.displayName
+            })
+            updateFollow[index].listUsers.followers =
+                updateFollow[index].listUsers.followers + 1;
+            currentUserList.user.following = currentUserList.user.following + 1;
         } else {
-            followBtnRef.current.classList.add("active");
-            setFollow(true);
+            querySnapshot.forEach((snapshot) => {
+                deleteDoc(doc(db, `users/${currentUserList.id}/following`, `${snapshot.id}`))
+                deleteDoc(
+                    doc(
+                        db,
+                        `users/${updateFollow[index].id}/followers`,
+                        `${snapshot.id}`
+                    )
+                ).then(() => {
+                    setFollow({ ...follow, [index]: false });
+                });
+                updateFollow[index].listUsers.followers =
+                    updateFollow[index].listUsers.followers - 1;
+                currentUserList.user.following =
+                    currentUserList.user.following - 1;
+            });
         }
+        updateDoc(followersCount, {
+            followers: updateFollow[index].listUsers.followers,
+        });
+        updateDoc(followingCount, {
+            following: currentUserList.user.following,
+        });
+        setUserInfo(updateFollow);
     };
     return (
         <>
@@ -28,7 +85,7 @@ const Sideprofile = () => {
                             <img src={currentUser.photoURL} alt="" />
                         </div>
                         <div className="side_profile_content_box">
-                            <span>{currentUser.displayName}</span>
+                            <span onClick={()=>navigate('/profile')}>{currentUser.displayName}</span>
                             <div
                                 className="switch_account"
                                 onClick={() => signOut(auth)}>
@@ -40,25 +97,34 @@ const Sideprofile = () => {
 
                     <div className="user_profile_suggestion">
                         <div className="profile_suggestion_header">
-                            <span>Suggestion</span>
+                            <span>Suggestions for you</span>
                         </div>
-                        {listAllUser.map((userItem, index) => {
+                        {userInfo.map((userItem, index) => {
                             return (
-                                
                                 <div className="suggestion_content" key={index}>
                                     <div className="suggestion_content_box">
                                         <div className="suggestion_user_img_box">
                                             <img
-                                                src={userItem.listUsers.photoURL}
+                                                src={
+                                                    userItem.listUsers.photoURL
+                                                }
                                                 alt=""
                                             />
                                         </div>
-                                        <span>{userItem.listUsers.displayName}</span>
+                                        <span>
+                                            {userItem.listUsers.displayName}
+                                        </span>
+
                                         <button
-                                            className="follow_btn"
-                                            onClick={handleFollowBtn}
-                                            ref={followBtnRef}>
-                                            {follow ? "unfollow" : "follow"}
+                                            className={`follow_btn ${
+                                                follow[index] ? "active" : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleFollowBtn(index)
+                                            }>
+                                            {follow[index]
+                                                ? "unfollow"
+                                                : "follow"}
                                         </button>
                                     </div>
                                 </div>
